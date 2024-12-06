@@ -15,17 +15,21 @@ def get_location_key(city: str) -> int:
 
         data = response.json()
         if data:
-            return data[0]['Key']  # Return the first location key
+            return [data[0]['Key']]  # Return the first location key
         else:
-            print("No data found for the specified city.")
-            return None
+            error_message = "No data found for the specified city."
+            print(error_message)
+            return [None, error_message]
     except requests.exceptions.HTTPError as http_err:
-        print(f"HTTP error occurred: {http_err}")  # Print HTTP error
+        error_message = f"HTTP error occurred: {http_err}"
+        print(error_message)  # Print HTTP error
     except requests.exceptions.RequestException as req_err:
-        print(f"Request error occurred: {req_err}")  # Print general request error
+        error_message = f"Request error occurred: {req_err}"
+        print(error_message)  # Print general request error
     except Exception as e:
-        print(f"An error occurred: {e}")  # Print any other exception
-    return None
+        error_message = f"An error occurred: {e}"
+        print(error_message)  # Print any other exception
+    return [None, error_message]
 
 
 # Function to get weather data from AccuWeather API using location key
@@ -49,17 +53,21 @@ def get_weather(location_key: int) -> dict[str]:
                                                                                                             {}).get(
                     'Value', 0)  # Precipitation value in mm
             }
-            return weather_info
+            return [weather_info]
         else:
-            print("No weather data found.")
-            return None
+            error_message = "No weather data found."
+            print(error_message)
+            return [None, error_message]
     except requests.exceptions.HTTPError as http_err:
-        print(f"HTTP error occurred: {http_err}")  # Print HTTP error
+        error_message = f"HTTP error occurred: {http_err}"
+        print(error_message)  # Print HTTP error
     except requests.exceptions.RequestException as req_err:
-        print(f"Request error occurred: {req_err}")  # Print general request error
+        error_message = f"Request error occurred: {req_err}"
+        print(error_message)  # Print general request error
     except Exception as e:
-        print(f"An error occurred: {e}")  # Print any other exception
-    return None
+        error_message = f"An error occurred: {e}"
+        print(error_message)  # Print any other exception
+    return [None, error_message]
 
 
 # function for deciding if weather is good
@@ -82,12 +90,12 @@ def index():
         start_location_key = get_location_key(start_city)
         end_location_key = get_location_key(end_city)
 
-        if start_location_key and end_location_key:
+        if start_location_key[0] and end_location_key[0]:
             # Get weather data for both cities
             start_weather = get_weather(start_location_key)
             end_weather = get_weather(end_location_key)
 
-            if start_weather and end_weather:
+            if start_weather[0] and end_weather[0]:
                 # See if the weather is suitable
                 goaway = check_bad_weather(start_weather) or check_bad_weather(end_weather)
                 return render_template('results.html',
@@ -97,10 +105,16 @@ def index():
                                        end_weather=end_weather,
                                        flag=goaway)
             else:
-                error_message = "Could not retrieve weather data."
+                if start_weather[0] is None:
+                    error_message = start_weather[1]
+                else:
+                    error_message = end_weather[1]
                 return render_template('index.html', error=error_message)
         else:
-            error_message = "Could not find one or both cities."
+            if start_location_key[0] is None:
+                error_message = start_location_key[1]
+            else:
+                error_message = end_location_key[1]
             return render_template('index.html', error=error_message)
 
     return render_template('index.html')
