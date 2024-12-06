@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Results</title>
+</head>
+<body>
+    <h1>Weather Conditions from {{ start_city }} to {{ end_city }}</h1>
+
+    <h2>Starting Point Weather:</h2>
+    <p>Temperature: {{ start_weather.temperature }} °C</p>
+    <p>Humidity: {{ start_weather.humidity }}%</p>
+    <p>Wind Speed: {{ start_weather.wind_speed }} m/s</p>
+    <p>Rain: {{ start_weather.precipitation_value }} mm</p>
+
+    <h2>Ending Point Weather:</h2>
+    <p>Temperature: {{ end_weather.temperature }} °C</p>
+    <p>Humidity: {{ end_weather.humidity }}%</p>
+    <p>Wind Speed: {{ end_weather.wind_speed }} m/s</p>
+    <p>Rain: {{ end_weather.precipitation_value }} mm</p>
+
+    {% if flag == True %}
+        <p style="color:red;">Ой-ой, погода плохая!</p>
+    {% else %}
+        <p style="color:green;">Погода — супер!</p>
+    {% endif %}
+
+    <a href="/">Check another route</a>
+</body>
+</html>
